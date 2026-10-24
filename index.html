@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlicher Workout-Planer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #3b82f6;
+            --border-color: #334155;
+            --success-color: #10b981;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            background-color: #334155;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #cbd5e1;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .counter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .counter-btn {
+            width: 44px;
+            height: 44px;
+            background-color: #334155;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .counter-input {
+            text-align: center;
+        }
+
+        .result-box {
+            background-color: #064e3b;
+            border: 1px solid #059669;
+            color: #a7f3d0;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .add-db-btn {
+            background-color: #334155;
+            color: #3b82f6;
+            border: 1px dashed #3b82f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Persönlicher Workout-Planer</h1>
+    <div class="subtitle">Hyrox & Heilberg Training Log</div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="btn-log" onclick="switchTab('log')">Workout Log</button>
+        <button class="tab-btn" id="btn-history" onclick="switchTab('history')">Verlauf & Progress</button>
+    </div>
+
+    <!-- TAB 1: WORKOUT INPUT -->
+    <div id="tab-log">
+        <!-- Laufen Segment -->
+        <div class="card">
+            <div class="card-title">
+                <span>🏃 Laufen</span>
+                <span class="badge">Intervall</span>
+            </div>
+            
+            <div class="grid-2" style="margin-bottom: 12px;">
+                <div>
+                    <label for="lap-distance">Rundendistanz (m):</label>
+                    <input type="number" id="lap-distance" value="300" step="10" oninput="calculateDistance()">
+                </div>
+                <div>
+                    <label for="lap-count">Anzahl Runden:</label>
+                    <div class="counter-group">
+                        <button class="counter-btn" onclick="adjustRounds(-1)">-</button>
+                        <input type="number" id="lap-count" class="counter-input" value="5" min="1" oninput="calculateDistance()">
+                        <button class="counter-btn" onclick="adjustRounds(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-box" id="distance-result">
+                Gesamtdistanz: 1.500 Meter (1,50 km)
+            </div>
+        </div>
+
+        <!-- Kernübungen -->
+        <div class="card">
+            <div class="card-title">
+                <span>🏋️ Kernübungen</span>
+                <span class="badge">Datenbank</span>
+            </div>
+
+            <div class="input-group">
+                <label>Kernübung 1:</label>
+                <select id="kern-select-1" class="kern-db-select"></select>
+                <div class="grid-2" style="margin-top: 6px;">
+                    <input type="number" id="kern-wdh-1" placeholder="Wiederholungen">
+                    <input type="number" id="kern-kg-1" placeholder="Gewicht (kg, optional)">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Kernübung 2:</label>
+                <select id="kern-select-2" class="kern-db-select"></select>
+                <div class="grid-2" style="margin-top: 6px;">
+                    <input type="number" id="kern-wdh-2" placeholder="Wiederholungen">
+                    <input type="number" id="kern-kg-2" placeholder="Gewicht (kg, optional)">
+                </div>
+            </div>
+
+            <button class="add-db-btn" onclick="addNewExercise('kern')">+ Neue Kernübung zur Datenbank hinzufügen</button>
+
+            <div class="input-group" style="margin-top: 10px;">
+                <label for="duration">Gesamtdauer (von Amazfit-Uhr):</label>
+                <input type="text" id="duration" placeholder="z. B. 45:00 min">
+            </div>
+        </div>
+
+        <!-- Ergänzungs- / Zusatzübungen -->
+        <div class="card">
+            <div class="card-title">
+                <span>⚡ Ergänzungs- & Zusatzübungen</span>
+                <span class="badge">Flexibel</span>
+            </div>
+
+            <div id="flex-slots-container"></div>
+
+            <button class="add-db-btn" onclick="addNewExercise('zusatz')">+ Neue Zusatzübung zur Datenbank hinzufügen</button>
+        </div>
+
+        <button class="save-btn" onclick="saveWorkout()">Workout Speichern</button>
+    </div>
+
+    <!-- TAB 2: HISTORY -->
+    <div id="tab-history" class="hidden">
+        <div class="card">
+            <div class="card-title">Gespeicherte Einheiten & Progression</div>
+            <div id="history-list">Lade Daten...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let defaultKern = ["Klimmzüge", "Liegestütze"];
+    let defaultZusatz = ["Wall Balls", "Plank-Wrist-Erhöhung", "Landmine Kniebeuge", "Landmine Bauch", "Freier Slot"];
+
+    function getDB(key, defaults) {
+        let saved = localStorage.getItem('db_' + key);
+        return saved ? JSON.parse(saved) : defaults;
+    }
+
+    function saveDB(key, array) {
+        localStorage.setItem('db_' + key, JSON.stringify(array));
+    }
+
+    function populateSelects() {
+        const kernList = getDB('kern', defaultKern);
+        const zusatzList = getDB('zusatz', defaultZusatz);
+
+        document.querySelectorAll('.kern-db-select').forEach((select, idx) => {
+            let currentVal = select.value;
+            select.innerHTML = kernList.map(item => `<option value="${item}">${item}</option>`).join('');
+            if (currentVal && kernList.includes(currentVal)) {
+                select.value = currentVal;
+            } else if (kernList[idx]) {
+                select.value = kernList[idx];
+            }
+        });
+
+        document.querySelectorAll('.zusatz-db-select').forEach((select, idx) => {
+            let currentVal = select.value;
+            select.innerHTML = zusatzList.map(item => `<option value="${item}">${item}</option>`).join('');
+            if (currentVal && zusatzList.includes(currentVal)) {
+                select.value = currentVal;
+            } else if (zusatzList[idx]) {
+                select.value = zusatzList[idx];
+            }
+        });
+    }
+
+    function buildFlexSlots() {
+        const container = document.getElementById('flex-slots-container');
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            html += `
+                <div class="input-group">
+                    <label>Flex Slot ${i}:</label>
+                    <select id="flex-select-${i}" class="zusatz-db-select"></select>
+                    <div class="grid-2" style="margin-top: 6px;">
+                        <input type="number" id="flex-wdh-${i}" placeholder="Sätze x Wdh (z.B. 20)">
+                        <input type="number" id="flex-kg-${i}" placeholder="Gewicht (kg, z.B. 6 oder 9)" step="0.5">
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+    }
+
+    function addNewExercise(type) {
+        let name = prompt("Name der neuen Übung eingeben:");
+        if (name && name.trim() !== "") {
+            let key = type === 'kern' ? 'kern' : 'zusatz';
+            let defaults = type === 'kern' ? defaultKern : defaultZusatz;
+            let list = getDB(key, defaults);
+            if (!list.includes(name.trim())) {
+                list.push(name.trim());
+                saveDB(key, list);
+                populateSelects();
+                alert(`"${name.trim()}" wurde zur Datenbank hinzugefügt!`);
+            }
+        }
+    }
+
+    function switchTab(tab) {
+        document.getElementById('btn-log').classList.remove('active');
+        document.getElementById('btn-history').classList.remove('active');
+
+        if (tab === 'log') {
+            document.getElementById('tab-log').classList.remove('hidden');
+            document.getElementById('tab-history').classList.add('hidden');
+            document.getElementById('btn-log').classList.add('active');
+        } else {
+            document.getElementById('tab-log').classList.add('hidden');
+            document.getElementById('tab-history').classList.remove('hidden');
+            document.getElementById('btn-history').classList.add('active');
+            renderHistory();
+        }
+    }
+
+    function adjustRounds(change) {
+        const input = document.getElementById('lap-count');
+        let current = parseInt(input.value) || 0;
+        if (current + change >= 1) {
+            input.value = current + change;
+            calculateDistance();
+        }
+    }
+
+    function calculateDistance() {
+        const lapDist = parseInt(document.getElementById('lap-distance').value) || 0;
+        const lapCount = parseInt(document.getElementById('lap-count').value) || 0;
+        const totalMeter = lapDist * lapCount;
+        const totalKm = (totalMeter / 1000).toFixed(2).replace('.', ',');
+        
+        let history = JSON.parse(localStorage.getItem('workout_history') || '[]');
+        let progressText = "";
+        
+        if (history.length > 0 && history[0].totalDistance) {
+            let prevDist = history[0].totalDistance;
+            let diff = totalMeter - prevDist;
+            let percent = Math.round((diff / prevDist) * 100);
+            let sign = percent >= 0 ? "+" : "";
+            progressText = `<br><span style="font-size:0.8rem; color:#93c5fd;">(${sign}${percent}% vs. letzte Einheit: ${prevDist}m)</span>`;
+        }
+
+        document.getElementById('distance-result').innerHTML = 
+            `Gesamtdistanz: ${totalMeter.toLocaleString('de-DE')} Meter (${totalKm} km) ${progressText}`;
+    }
+
+    function saveWorkout() {
+        const entry = {
+            date: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            lapDistance: document.getElementById('lap-distance').value,
+            lapCount: document.getElementById('lap-count').value,
+            totalDistance: (parseInt(document.getElementById('lap-distance').value) || 0) * (parseInt(document.getElementById('lap-count').value) || 0),
+            duration: document.getElementById('duration').value,
+            kern1: { name: document.getElementById('kern-select-1').value, wdh: document.getElementById('kern-wdh-1').value, kg: document.getElementById('kern-kg-1').value },
+            kern2: { name: document.getElementById('kern-select-2').value, wdh: document.getElementById('kern-wdh-2').value, kg: document.getElementById('kern-kg-2').value },
+            flex: []
+        };
+
+        for (let i = 1; i <= 5; i++) {
+            let wdh = document.getElementById(`flex-wdh-${i}`).value;
+            let kg = document.getElementById(`flex-kg-${i}`).value;
+            if (wdh || kg) {
+                entry.flex.push({
+                    name: document.getElementById(`flex-select-${i}`).value,
+                    wdh: wdh,
+                    kg: kg
+                });
+            }
+        }
+
+        let history = JSON.parse(localStorage.getItem('workout_history') || '[]');
+        history.unshift(entry);
+        localStorage.setItem('workout_history', JSON.stringify(history));
+
+        alert('Workout erfolgreich gespeichert!');
+    }
+
+    function renderHistory() {
+        let history = JSON.parse(localStorage.getItem('workout_history') || '[]');
+        const container = document.getElementById('history-list');
+        
+        if (history.length === 0) {
+            container.innerHTML = '<p style="color:#94a3b8;">Noch keine Einheiten gespeichert.</p>';
+            return;
+        }
+
+        container.innerHTML = history.map(item => {
+            let flexHtml = item.flex ? item.flex.map(f => {
+                let tonnage = (f.wdh && f.kg) ? ` (Total: ${f.wdh * f.kg} kg)` : '';
+                return `<div>⚡ <b>${f.name}:</b> ${f.wdh || 0} Wdh ${f.kg ? '@ ' + f.kg + 'kg' : ''}${tonnage}</div>`;
+            }).join('') : '';
+
+            return `
+                <div class="history-item">
+                    <div style="font-weight:bold; color:#3b82f6;">${item.date}</div>
+                    <div>🏃 <b>Laufen:</b> ${item.lapCount} Runden × ${item.lapDistance}m = <b>${item.totalDistance}m</b></div>
+                    <div>⏱️ <b>Dauer:</b> ${item.duration || '-'}</div>
+                    <div>🏋️ <b>${item.kern1.name}:</b> ${item.kern1.wdh || 0} Wdh ${item.kern1.kg ? '@ ' + item.kern1.kg + 'kg' : ''}</div>
+                    <div>🏋️ <b>${item.kern2.name}:</b> ${item.kern2.wdh || 0} Wdh ${item.kern2.kg ? '@ ' + item.kern2.kg + 'kg' : ''}</div>
+                    ${flexHtml}
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        buildFlexSlots();
+        populateSelects();
+        calculateDistance();
+    });
+</script>
+
+</body>
+</html>
