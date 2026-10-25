@@ -67,7 +67,6 @@
             border-color: var(--accent-color);
         }
 
-        /* Zentraler Edit-Button oberhalb */
         .global-edit-btn {
             width: 100%;
             padding: 10px;
@@ -210,10 +209,28 @@
         .history-item {
             border-bottom: 1px solid var(--border-color);
             padding: 14px 0;
+            position: relative;
         }
 
         .history-item:last-child {
             border-bottom: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .delete-history-btn {
+            background-color: var(--danger-color);
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         .changed-item {
@@ -291,10 +308,10 @@
         <button class="tab-btn" id="btn-history" onclick="switchTab('history')">Verlauf & Progress</button>
     </div>
 
-    <!-- Globaler Button zum Bearbeiten der Übungen -->
-    <button class="global-edit-btn" onclick="toggleGlobalDBManager()">⚙️ Datenbank & Übungen bearbeiten (Kern & Zusatz)</button>
+    <!-- Globaler Button zum Bearbeiten der Übungen im Log -->
+    <button class="global-edit-btn" onclick="toggleGlobalDBManager()">⚙️ Übungen & Datenbank bearbeiten (Kern & Zusatz)</button>
 
-    <!-- Globaler Edit-Bereich (Standardmäßig versteckt) -->
+    <!-- Globaler Edit-Bereich -->
     <div id="global-db-manager" class="db-manager-container hidden">
         <div style="font-weight: bold; margin-bottom: 8px; color: #f59e0b;">🏋️ Kernübungen verwalten:</div>
         <div id="db-manage-kern" class="db-manage-box"></div>
@@ -312,7 +329,7 @@
     <!-- TAB 1: WORKOUT INPUT -->
     <div id="tab-log">
         
-        <!-- CARD 1: LAUFEN (Fix an erster Stelle) -->
+        <!-- CARD 1: LAUFEN -->
         <div class="card" id="card-laufen">
             <div class="card-title">
                 <span>🏃 Laufen</span>
@@ -364,7 +381,7 @@
                 </div>
             </div>
 
-            <button class="add-db-btn" onclick="addNewExercise('kern')">+ Neue Kernübung zur Datenbank hinzufügen</button>
+            <button class="add-db-btn" onclick="addNewExercise('kern')">+ Neue Kernübung hinzufügen</button>
         </div>
 
         <!-- CARD 3: ZUSATZÜBUNGEN -->
@@ -376,7 +393,7 @@
 
             <div id="flex-slots-container"></div>
 
-            <button class="add-db-btn" onclick="addNewExercise('zusatz')">+ Neue Zusatzübung zur Datenbank hinzufügen</button>
+            <button class="add-db-btn" onclick="addNewExercise('zusatz')">+ Neue Zusatzübung hinzufügen</button>
         </div>
 
         <button class="save-btn" onclick="saveWorkout()">Workout Speichern</button>
@@ -467,7 +484,6 @@
         }
     }
 
-    /* Globaler DB-Manager ein- / ausblenden */
     function toggleGlobalDBManager() {
         const mgr = document.getElementById('global-db-manager');
         if (mgr.classList.contains('hidden')) {
@@ -527,6 +543,17 @@
             saveDB(key, list);
             populateSelects();
             renderDBManager(type);
+        }
+    }
+
+    /* Einzelnen Historieneintrag löschen */
+    function deleteHistoryItem(index) {
+        let history = JSON.parse(localStorage.getItem('workout_history') || '[]');
+        if (confirm(`Möchtest du dieses gespeicherte Workout vom ${history[index].date} wirklich löschen?`)) {
+            history.splice(index, 1);
+            localStorage.setItem('workout_history', JSON.stringify(history));
+            updateTopProgressBanner();
+            renderHistory();
         }
     }
 
@@ -624,7 +651,7 @@
             lapCount: document.getElementById('lap-count').value,
             totalDistance: (parseInt(document.getElementById('lap-distance').value) || 0) * (parseInt(document.getElementById('lap-count').value) || 0),
             kern1: { name: document.getElementById('kern-select-1').value, wdh: document.getElementById('kern-wdh-1').value, kg: document.getElementById('kern-kg-1').value },
-            kern2: { name: document.getElementById('kern-select-2').value, wdh: document.getElementById('kern-wdh-2').value, kg: document.getElementById('kern-kg-2').value },
+            kern2: { name: document.getElementById('kern-select-2').value, wdh: document.getElementById('kern-wdh-2').value, kg: document.getElementById('kern-kg-2'].value },
             flex: []
         };
 
@@ -708,7 +735,10 @@
 
             return `
                 <div class="history-item">
-                    <div style="font-weight:bold; color:#3b82f6; font-size:1.05rem; margin-bottom: 6px;">${item.date}</div>
+                    <div class="history-header">
+                        <span style="font-weight:bold; color:#3b82f6; font-size:1.05rem;">${item.date}</span>
+                        <button class="delete-history-btn" onclick="deleteHistoryItem(${index})">🗑️ Workout löschen</button>
+                    </div>
                     <div class="${runClass}">🏃 <b>Laufen:</b> ${item.lapCount} Runden × ${item.lapDistance}m = <b>${item.totalDistance}m</b></div>
                     <div class="${k1Class}">🏋️ <b>${item.kern1.name}:</b> ${item.kern1.wdh || 0} Wdh ${item.kern1.kg ? '@ ' + item.kern1.kg + 'kg' : ''}</div>
                     <div class="${k2Class}">🏋️ <b>${item.kern2.name}:</b> ${item.kern2.wdh || 0} Wdh ${item.kern2.kg ? '@ ' + item.kern2.kg + 'kg' : ''}</div>
