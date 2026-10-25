@@ -308,27 +308,27 @@
         <button class="tab-btn" id="btn-history" onclick="switchTab('history')">Verlauf & Progress</button>
     </div>
 
-    <!-- Globaler Button zum Bearbeiten der Übungen im Log -->
-    <button class="global-edit-btn" onclick="toggleGlobalDBManager()">⚙️ Übungen & Datenbank bearbeiten (Kern & Zusatz)</button>
-
-    <!-- Globaler Edit-Bereich -->
-    <div id="global-db-manager" class="db-manager-container hidden">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #f59e0b;">🏋️ Kernübungen verwalten:</div>
-        <div id="db-manage-kern" class="db-manage-box"></div>
-        
-        <div style="font-weight: bold; margin-top: 14px; margin-bottom: 8px; color: #f59e0b;">⚡ Zusatzübungen verwalten:</div>
-        <div id="db-manage-zusatz" class="db-manage-box"></div>
-    </div>
-
-    <!-- Gesamtsteigerungs-Banner -->
-    <div class="overall-progress-banner" id="top-progress-banner">
-        <span>Gesamtsteigerung zum Vorherigen:</span>
-        <span id="top-progress-value" style="color: #94a3b8;">Lade Daten...</span>
-    </div>
-
     <!-- TAB 1: WORKOUT INPUT -->
     <div id="tab-log">
         
+        <!-- Globaler Button zum Bearbeiten der Übungen (nur im Log) -->
+        <button class="global-edit-btn" onclick="toggleGlobalDBManager()">⚙️ Datenbank & Übungen bearbeiten (Kern & Zusatz)</button>
+
+        <!-- Globaler Edit-Bereich (Standardmäßig versteckt) -->
+        <div id="global-db-manager" class="db-manager-container hidden">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #f59e0b;">🏋️ Kernübungen verwalten:</div>
+            <div id="db-manage-kern" class="db-manage-box"></div>
+            
+            <div style="font-weight: bold; margin-top: 14px; margin-bottom: 8px; color: #f59e0b;">⚡ Zusatzübungen verwalten:</div>
+            <div id="db-manage-zusatz" class="db-manage-box"></div>
+        </div>
+
+        <!-- Gesamtsteigerungs-Banner -->
+        <div class="overall-progress-banner" id="top-progress-banner">
+            <span>Gesamtsteigerung zum Vorherigen:</span>
+            <span id="top-progress-value" style="color: #94a3b8;">Lade Daten...</span>
+        </div>
+
         <!-- CARD 1: LAUFEN -->
         <div class="card" id="card-laufen">
             <div class="card-title">
@@ -651,7 +651,7 @@
             lapCount: document.getElementById('lap-count').value,
             totalDistance: (parseInt(document.getElementById('lap-distance').value) || 0) * (parseInt(document.getElementById('lap-count').value) || 0),
             kern1: { name: document.getElementById('kern-select-1').value, wdh: document.getElementById('kern-wdh-1').value, kg: document.getElementById('kern-kg-1').value },
-            kern2: { name: document.getElementById('kern-select-2').value, wdh: document.getElementById('kern-wdh-2').value, kg: document.getElementById('kern-kg-2'].value },
+            kern2: { name: document.getElementById('kern-select-2').value, wdh: document.getElementById('kern-wdh-2').value, kg: document.getElementById('kern-kg-2').value },
             flex: []
         };
 
